@@ -34,7 +34,7 @@ type NormalMap struct{
 func NewNormalMap(r image.Rectangle) *NormalMap {
 	nm := new(NormalMap)
 	nm.BasePicture = NewBasePicture(r)
-	nm.Normals = make([]float32,nm.Length)
+	nm.Normals = make([]float32,nm.Length*3)
 	return nm
 }
 func (n NormalMap) SetNormal(x,y int, c Normal) {
@@ -73,7 +73,7 @@ type Normal64Map struct{
 func NewNormal64Map(r image.Rectangle) *Normal64Map {
 	nm := new(Normal64Map)
 	nm.BasePicture = NewBasePicture(r)
-	nm.Normals = make([]float64,nm.Length)
+	nm.Normals = make([]float64,nm.Length*3)
 	return nm
 }
 func (n Normal64Map) SetNormal64(x,y int, c Normal64) {
