@@ -31,10 +31,11 @@ type NormalMap struct{
 	BasePicture
 	Normals []float32
 }
-func NewNormalMap(r image.Rectangle) {
+func NewNormalMap(r image.Rectangle) *NormalMap {
 	nm := new(NormalMap)
 	nm.BasePicture = NewBasePicture(r)
 	nm.Normals = make([]float32,nm.Length)
+	return nm
 }
 func (n NormalMap) SetNormal(x,y int, c Normal) {
 	i := n.PixOffset(x,y)*3
@@ -69,10 +70,11 @@ type Normal64Map struct{
 	BasePicture
 	Normals []float64
 }
-func NewNormal64Map(r image.Rectangle) {
+func NewNormal64Map(r image.Rectangle) *Normal64Map {
 	nm := new(Normal64Map)
 	nm.BasePicture = NewBasePicture(r)
 	nm.Normals = make([]float64,nm.Length)
+	return nm
 }
 func (n Normal64Map) SetNormal64(x,y int, c Normal64) {
 	i := n.PixOffset(x,y)*3
