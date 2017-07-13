@@ -50,6 +50,9 @@ func copyf(dst draw.Image, src image.Image, pchan <- chan image.Point, qchan cha
 	qchan <- 1
 }
 
+/*
+Copies an Image using one thread.
+*/
 func Copy(dst draw.Image, src image.Image, blind bool) error {
 	dR,sR := dst.Bounds(),src.Bounds()
 	if !(blind||dR.Eq(sR)) { return ESizeMismatch }
@@ -60,10 +63,13 @@ func Copy(dst draw.Image, src image.Image, blind bool) error {
 	return nil
 }
 
+/*
+Copies an Image using multiple threads. The images should be thread-safe.
+*/
 func CopyMT(dst draw.Image, src image.Image, blind bool, nthreads int) error {
 	dR,sR := dst.Bounds(),src.Bounds()
 	if !(blind||dR.Eq(sR)) { return ESizeMismatch }
-	pchan := make(chan image.Point,16)
+	pchan := make(chan image.Point,nthreads)
 	qchan := make(chan int,nthreads)
 	go iterate(sR,pchan)
 	for i:=0; i<nthreads; i++ {
@@ -73,5 +79,41 @@ func CopyMT(dst draw.Image, src image.Image, blind bool, nthreads int) error {
 		<- qchan
 	}
 	return nil
+}
+
+type Operator interface{
+	Operate(pt image.Point)
+}
+func operateF(o Operator, pchan <- chan image.Point, qchan chan <- int) {
+	for pt := range pchan {
+		o.Operate(pt)
+	}
+	qchan <- 1
+}
+
+/*
+Performs the Task 'o' on every Pixel within the Rectangle 'r'.
+*/
+func Operate(o Operator, r image.Rectangle) {
+	pchan := make(chan image.Point,16)
+	qchan := make(chan int,1)
+	go iterate(r,pchan)
+	operateF(o,pchan,qchan)
+}
+
+/*
+Performs the Task 'o' on every Pixel within the Rectangle 'r'.
+This implementation uses multiple threads, so the Task should be threadsafe.
+*/
+func OperateMT(o Operator, r image.Rectangle, nthreads int) {
+	pchan := make(chan image.Point,nthreads)
+	qchan := make(chan int,nthreads)
+	go iterate(r,pchan)
+	for i:=0; i<nthreads; i++ {
+		go operateF(o,pchan,qchan)
+	}
+	for i:=0; i<nthreads; i++ {
+		<- qchan
+	}
 }
 
