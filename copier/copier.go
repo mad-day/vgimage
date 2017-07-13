@@ -21,7 +21,7 @@
 /*
 An Image Copy algorithm. Supports both, single threaded and multithreaded operations.
 */
-package vgimage
+package copier
 
 
 import (
