@@ -18,46 +18,33 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-/*
-A Component for working with Normal-Maps.
-*/
-package normalmap
+package normalmath
 
-import "image"
-import "github.com/mad-day/vgimage"
 import "math"
+import "github.com/mad-day/vgimage"
 
-func clampf(f float64) float64 {
-	if math.IsNaN(f) || math.IsInf(f,0) { return 0.0 }
-	if f< -1.0 { return -1.0 }
-	if f>  1.0 { return 1.0 }
-	return f
+type Angle struct{
+	X,Y,Z float64
+}
+func (a *Angle) FromNormal64(n vgimage.Normal64) {
+	a.X = math.Atan2(n.Y,n.Z)
+	z := math.Sqrt( (n.Y*n.Y) + (n.Z*n.Z) )
+	a.Y = math.Atan2(n.X,z)
+	a.Z = 0
 }
 
-func clamp16(i int32) uint32 {
-	if i<0 { return 0 }
-	if i>0xffff { return 0xffff }
-	return uint32(i)
-}
-
-type rectangular struct{
-	rect image.Rectangle
-}
-func (r *rectangular) clamp(x, y int) (int,int) {
-	if x<r.rect.Min.X { x=r.rect.Min.X }
-	if x>r.rect.Max.X { x=r.rect.Max.X }
-	if y<r.rect.Min.Y { y=r.rect.Min.Y }
-	if y>r.rect.Max.Y { y=r.rect.Max.Y }
-	return x,y
-}
-
-type NormalSink interface{
-	SetNormal64(x,y int, c vgimage.Normal64)
-	SetNormal(x,y int, c vgimage.Normal)
-}
-
-type NormalSource interface{
-	Normal64At(x,y int) vgimage.Normal64
-	NormalAt(x,y int) vgimage.Normal
+func (a Angle) Normal64() vgimage.Normal64 {
+	n := vgimage.Normal64{0,0,1}
+	
+	//Applying Z will cause nothing
+	
+	//Apply Y:
+	n.X = math.Sin(a.Y)
+	n.Z = math.Cos(a.Y)
+	
+	//Apply X:
+	n.Y = math.Sin(a.X)*n.Z
+	n.Z = math.Cos(a.X)*n.Z
+	return n
 }
 

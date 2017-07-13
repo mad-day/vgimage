@@ -19,45 +19,12 @@
  */
 
 /*
-A Component for working with Normal-Maps.
+Math for working with normals.
 */
-package normalmap
+package normalmath
 
-import "image"
-import "github.com/mad-day/vgimage"
-import "math"
 
-func clampf(f float64) float64 {
-	if math.IsNaN(f) || math.IsInf(f,0) { return 0.0 }
-	if f< -1.0 { return -1.0 }
-	if f>  1.0 { return 1.0 }
-	return f
+func equalsf(a,b,tolerance float64) bool{
+	c := a-b
+	return (c<tolerance)&&(c> -tolerance)
 }
-
-func clamp16(i int32) uint32 {
-	if i<0 { return 0 }
-	if i>0xffff { return 0xffff }
-	return uint32(i)
-}
-
-type rectangular struct{
-	rect image.Rectangle
-}
-func (r *rectangular) clamp(x, y int) (int,int) {
-	if x<r.rect.Min.X { x=r.rect.Min.X }
-	if x>r.rect.Max.X { x=r.rect.Max.X }
-	if y<r.rect.Min.Y { y=r.rect.Min.Y }
-	if y>r.rect.Max.Y { y=r.rect.Max.Y }
-	return x,y
-}
-
-type NormalSink interface{
-	SetNormal64(x,y int, c vgimage.Normal64)
-	SetNormal(x,y int, c vgimage.Normal)
-}
-
-type NormalSource interface{
-	Normal64At(x,y int) vgimage.Normal64
-	NormalAt(x,y int) vgimage.Normal
-}
-

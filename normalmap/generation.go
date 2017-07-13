@@ -119,7 +119,14 @@ func (self *job3x3) Operate(pt image.Point) {
 	self.dst.SetNormal64(pt.X,pt.Y,n)
 }
 
+/*
+Creates a Job, that generates a Normal-Map from a Height-Map using an operator such as Sobel. It returns a nil-Pointer
+on failure, (if illegal arguments are given).
 
+Use copier.Operate(Operator,image.Rectangle) to perform the job.
+
+The parameter scaleFactor is the weight of the Height-Map. The default value should be 1.0 !
+*/
 func CreateGeneratorJob(dst NormalSink,src *image.Gray16, f SourceFilter,scaleFactor float64) copier.Operator {
 	jb := new(job3x3)
 	jb.rect = src.Bounds()
