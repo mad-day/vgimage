@@ -33,19 +33,15 @@ type jobStacking struct{
 }
 
 func (self *jobStacking) Operate(pt image.Point) {
-	T := normalmath.Angle{}
 	A := normalmath.Quaternion{}
 	C := normalmath.Quaternion{}
 	
-	T.FromNormal64(self.src[0].Normal64At(pt.X,pt.Y))
-	A.FromAngle(T)
+	A.FromNormal64(self.src[0].Normal64At(pt.X,pt.Y))
 	for i,n := 1,self.nSrc; i<n; i++ {
-		T.FromNormal64(self.src[i].Normal64At(pt.X,pt.Y))
-		C.FromAngle(T)
+		C.FromNormal64(self.src[i].Normal64At(pt.X,pt.Y))
 		A = A.Multiply(C)
 	}
-	A.ToAngle(&T)
-	self.dst.SetNormal64(pt.X,pt.Y,T.Normal64())
+	self.dst.SetNormal64(pt.X,pt.Y,A.Normal64())
 }
 
 /*
