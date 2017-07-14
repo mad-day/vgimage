@@ -22,9 +22,17 @@ package normalmap
 
 import (
 	"image"
+	"github.com/mad-day/vgimage"
 	"github.com/mad-day/vgimage/copier"
 	"github.com/mad-day/vgimage/normalmath"
 )
+
+type jobNeutral struct{
+	dst NormalSink
+}
+func (self *jobNeutral) Operate(pt image.Point) {
+	self.dst.SetNormal64(pt.X,pt.Y,vgimage.Normal64{0,0,1})
+}
 
 type jobStacking struct{
 	src  []NormalSource
@@ -45,13 +53,12 @@ func (self *jobStacking) Operate(pt image.Point) {
 }
 
 /*
-Creates a Job, that stacks multiple Normal-Maps above each other. The number of
-sources must be at least 1, otherwise, the function fails and a nil-pointer is returned.
+Creates a Job, that stacks multiple Normal-Maps above each other.
 
 Use copier.Operate(Operator,image.Rectangle) to perform the job.
 */
 func NewStackingJob(dst NormalSink,src ...NormalSource) copier.Operator {
-	if len(src)==0 { return nil }
+	if len(src)==0 { return &jobNeutral{dst} }
 	js := new(jobStacking)
 	js.src = src
 	js.dst = dst
