@@ -25,17 +25,13 @@ import "github.com/mad-day/vgimage"
 func CombineNormals64(norms ...vgimage.Normal64) vgimage.Normal64{
 	if len(norms)==0 { return vgimage.Normal64{0,0,1} }
 	if len(norms)==1 { return norms[0] }
-	T := Angle{}
 	A := Quaternion{}
 	N := Quaternion{}
 	
-	T.FromNormal64(norms[0])
-	A.FromAngle(T)
+	A.FromNormal64(norms[0])
 	for _,e := range norms[1:] {
-		T.FromNormal64(e)
-		N.FromAngle(T)
+		N.FromNormal64(e)
 		A = A.Multiply(N)
 	}
-	A.ToAngle(&T)
-	return T.Normal64()
+	return A.Normal64()
 }
