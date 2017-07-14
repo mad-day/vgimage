@@ -22,7 +22,7 @@ package normalmath
 
 import "github.com/mad-day/vgimage"
 
-func CompbineNormals64(norms ...vgimage.Normal64) vgimage.Normal64{
+func CombineNormals64(norms ...vgimage.Normal64) vgimage.Normal64{
 	if len(norms)==0 { return vgimage.Normal64{0,0,1} }
 	if len(norms)==1 { return norms[0] }
 	T := Angle{}
